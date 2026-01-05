@@ -94,6 +94,7 @@ export default function Govt() {
             <h2 className="text-2xl font-semibold text-center">
               Govt Compliances
             </h2>
+
             {/* ------------------ PAN / TAN ------------------ */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {/* PAN */}
@@ -202,6 +203,7 @@ export default function Govt() {
                 )}
               </div>
             </div>
+
             {/* ------------------ PAN LINK ------------------ */}
             <Field className="-mt-8">
               <FieldLabel className="">PAN linked with Aadhaar</FieldLabel>
@@ -222,6 +224,7 @@ export default function Govt() {
                 ))}
               </RadioGroup>
             </Field>
+
             {/* ------------------ GST / MSME ------------------ */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 -mt-8">
               {/* GST */}
@@ -349,6 +352,7 @@ export default function Govt() {
                     type="hidden"
                     {...form.register(`itr.${index}.year`)}
                     value={item.year.replace("–", "-")}
+                    className=""
                   />
 
                   <div className="flex justify-between items-center">

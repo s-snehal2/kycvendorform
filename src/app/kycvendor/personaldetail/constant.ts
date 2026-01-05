@@ -5,7 +5,7 @@ export const DESIGNATION_OPTIONS = ["Partner", "Director", "Manager", "Other"] a
 export const statusEnum = z.enum([
   "Resident Individual",
   "Non-Resident",
-  "Foreign National",
+  "Foreign Nation",
 ]);
 
 export const constitutionEnum = z.enum([
@@ -20,7 +20,7 @@ export const designationEnum = z.enum(["Partner", "Director", "Manager","Other"]
 export const STATUS_OPTIONS = [
   { label: "Resident Individual", value: "Resident Individual" },
   { label: "Non-Resident", value: "Non-Resident" },
-  { label: "Foreign National", value: "Foreign National" },
+  { label: "Foreign Nation", value: "Foreign Nation" },
 ] as const;
 
 export const CONSTITUTION_OPTIONS = [

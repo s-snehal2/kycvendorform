@@ -27,7 +27,7 @@ export default function Preview({ data = PersonalData }: PreviewProps) {
               Personal Details
             </CardTitle>
           </CardHeader>
-          <CardContent className="grid md:grid-cols-2 gap-4 -mt-2 border-b-2 pb-8">
+          <CardContent className="grid md:grid-cols-2 gap-4 -mt-2 border-b-2 pb-4">
             <p className="-mt-2">
               Name: <span className="font-semibold ">{data.name}</span>
             </p>
@@ -77,13 +77,13 @@ export default function Preview({ data = PersonalData }: PreviewProps) {
         </Card>
 
         {/* ---------------- Government Documents ---------------- */}
-        <Card className="border-none shadow-none -mt-8">
+        <Card className="border-none shadow-none -mt-16">
           <CardHeader className="">
             <CardTitle className="text-xl font-medium underline">
               Govt Compliances
             </CardTitle>
           </CardHeader>
-          <CardContent className="space-y-2 -mt-2  border-b-2 pb-8">
+          <CardContent className="space-y-2 -mt-4  border-b-2 pb-4">
             {/* ---------------- ITR DETAILS ---------------- */}
             <div className="space-y-3">
               <h4 className="text-sm font-semibold text-muted-foreground uppercase">
@@ -94,7 +94,7 @@ export default function Preview({ data = PersonalData }: PreviewProps) {
                 data.itr.map((item) => (
                   <div
                     key={item.year}
-                    className="rounded-lg border bg-muted/20 p-4 space-y-3"
+                    className="rounded-lg border bg-muted/20 p-2 space-y-3"
                   >
                     {/* Header */}
                     <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
@@ -136,47 +136,64 @@ export default function Preview({ data = PersonalData }: PreviewProps) {
                 </p>
               )}
             </div>
+            <div className="grid grid-cols-2 gap-4">
+              <p>
+                PAN No:{" "}
+                <span className="font-semibold">
+                  {data.pan.map((f: any) => f.name).join(", ")}
+                </span>
+              </p>
+              <p>
+                PAN Copy:{" "}
+                <span className="font-semibold">
+                  {data.pan.map((f: any) => f.name).join(", ")}
+                </span>
+              </p>
 
-            <p>
-              PAN:{" "}
-              <span className="font-semibold">
-                {data.pan.map((f: any) => f.name).join(", ")}
-              </span>
-            </p>
-            <p>
-              TAN:{" "}
-              <span className="font-semibold">
-                {data.tan.map((f: any) => f.name).join(", ")}
-              </span>
-            </p>
-            <p>
-              GST Reg No: <span className="font-semibold">{data.gstregno}</span>
-            </p>
-            <p>
-              GST Certificate:{" "}
-              <span className="font-semibold">
-                {data.gstcertificate.map((f: any) => f.name).join(", ")}
-              </span>
-            </p>
-            <p>
-              MSME Reg No:{" "}
-              <span className="font-semibold">{data.msmeregno}</span>
-            </p>
-            <p>
-              MSME Certificate:{" "}
-              <span className="font-semibold">
-                {data.msmecertificate.map((f: any) => f.name).join(", ")}
-              </span>
-            </p>
-            <p>
-              PAN Linked with Aadhaar:{" "}
-              <span className="font-semibold">{data.panLinkedWithAadhaar}</span>
-            </p>
+              <p>
+                TAN:{" "}
+                <span className="font-semibold">
+                  {data.tan.map((f: any) => f.name).join(", ")}
+                </span>
+              </p>
+              <p>
+                TAN Copy:{" "}
+                <span className="font-semibold">
+                  {data.pan.map((f: any) => f.name).join(", ")}
+                </span>
+              </p>
+              <p>
+                GST Reg No:{" "}
+                <span className="font-semibold">{data.gstregno}</span>
+              </p>
+              <p>
+                GST Certificate:{" "}
+                <span className="font-semibold">
+                  {data.gstcertificate.map((f: any) => f.name).join(", ")}
+                </span>
+              </p>
+              <p>
+                MSME Reg No:{" "}
+                <span className="font-semibold">{data.msmeregno}</span>
+              </p>
+              <p>
+                MSME Certificate:{" "}
+                <span className="font-semibold">
+                  {data.msmecertificate.map((f: any) => f.name).join(", ")}
+                </span>
+              </p>
+              <p>
+                PAN Linked with Aadhaar:{" "}
+                <span className="font-semibold">
+                  {data.panLinkedWithAadhaar}
+                </span>
+              </p>
+            </div>
           </CardContent>
         </Card>
 
         {/* ---------------- Bank Details ---------------- */}
-        <Card className="border-none shadow-none -mt-8">
+        <Card className="border-none shadow-none -mt-16">
           <CardHeader className="">
             <CardTitle className="text-xl font-medium underline">
               Bank Details
@@ -184,14 +201,13 @@ export default function Preview({ data = PersonalData }: PreviewProps) {
           </CardHeader>
           <CardContent className="grid md:grid-cols-2 gap-4 -mt-2">
             <p className="-mt-2">
-              Bank Name: <span className="font-semibold">{data.bankname}</span>
+              Account Number:{" "}
+              <span className="font-semibold">{data.accountno}</span>
             </p>
             <p className="-mt-2">
-              Cancelled Cheque:{" "}
-              <span className="font-semibold">
-                {data.cancelcheque.map((f: any) => f.name).join(", ")}
-              </span>
+              Bank Name: <span className="font-semibold">{data.bankname}</span>
             </p>
+
             <p className="-mt-2">
               Branch: <span className="font-semibold">{data.branch}</span>
             </p>
@@ -199,15 +215,17 @@ export default function Preview({ data = PersonalData }: PreviewProps) {
               IFSC Code: <span className="font-semibold">{data.ifsccode}</span>
             </p>
             <p className="-mt-2">
-              Account Type:{" "}
+              Account Type:
               <span className="font-semibold">{data.accounttype}</span>
             </p>
             <p className="-mt-2">
               MICR Code: <span className="font-semibold">{data.digit}</span>
             </p>
             <p className="-mt-2">
-              Account Number:{" "}
-              <span className="font-semibold">{data.accountno}</span>
+              Cancelled Cheque:
+              <span className="font-semibold">
+                {data.cancelcheque.map((f: any) => f.name).join(", ")}
+              </span>
             </p>
           </CardContent>
         </Card>

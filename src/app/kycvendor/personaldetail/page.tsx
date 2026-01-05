@@ -29,7 +29,7 @@ import {
   statusEnum,
 } from "./constant";
 import { Card } from "@/components/ui/card";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 
 export default function PersonalDetails() {
   const router = useRouter();
@@ -41,14 +41,10 @@ export default function PersonalDetails() {
     },
   });
 
-  const [loadingPin, setLoadingPin] = useState(false);
-
   useEffect(() => {
     const pin = form.watch("pin");
 
     if (pin?.length === 6) {
-      setLoadingPin(true);
-
       fetch(`https://api.postalpincode.in/pincode/${pin}`)
         .then((res) => res.json())
         .then((data) => {
@@ -56,14 +52,14 @@ export default function PersonalDetails() {
           if (postOffice) {
             form.setValue("state", postOffice.State);
             form.setValue("district", postOffice.District);
-            form.setValue("city", postOffice.Block || postOffice.Name);
+            form.setValue("city", postOffice.city || postOffice.Name);
           } else {
             form.setValue("state", "");
             form.setValue("district", "");
             form.setValue("city", "");
           }
         })
-        .finally(() => setLoadingPin(false));
+        .finally();
     }
   }, [form.watch("pin")]);
 
@@ -140,9 +136,7 @@ export default function PersonalDetails() {
             {/* CONTACT + DATE */}
             <div className="grid md:grid-cols-3 gap-5 -mt-6">
               <Field>
-                <FieldLabel className="">
-                  Date of Birth / Incorporation
-                </FieldLabel>
+                <FieldLabel>Date of Birth / Incorporation</FieldLabel>
                 <Input
                   type="date"
                   {...form.register("dobdoi")}
@@ -152,7 +146,7 @@ export default function PersonalDetails() {
               </Field>
 
               <Field>
-                <FieldLabel className=" ">Mobile Number</FieldLabel>
+                <FieldLabel>Mobile Number</FieldLabel>
                 <Input
                   type="number"
                   {...form.register("mobileno")}
@@ -164,7 +158,7 @@ export default function PersonalDetails() {
               </Field>
 
               <Field>
-                <FieldLabel className="">Email</FieldLabel>
+                <FieldLabel>Email</FieldLabel>
                 <Input {...form.register("email")} className="-mt-2" />
                 <FieldError>{form.formState.errors.email?.message}</FieldError>
               </Field>
