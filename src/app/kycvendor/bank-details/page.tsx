@@ -11,11 +11,22 @@ import { Form } from "@/components/ui/form";
 import { useRouter } from "next/navigation";
 import { BankDetailsFormType, formSchema } from "./scheme";
 import { Card } from "@/components/ui/card";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Account_Type, accounttypeEnum } from "./constant";
 
 export default function BankDetails() {
   const router = useRouter();
   const form = useForm<BankDetailsFormType>({
     resolver: zodResolver(formSchema),
+    defaultValues: {
+      accounttype: "Saving",
+    },
   });
 
   const handleFileChange = (files: FileList | null) => {
@@ -40,7 +51,7 @@ export default function BankDetails() {
     <div className="min-h-screen py-4 px-4">
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="">
-          <Card className="min-h-[calc(100vh-2rem)] max-w-3xl  mx-auto space-y-6 bg-background p-8 rounded-2xl shadow-lg border">
+          <Card className="min-h-[calc(100vh-7rem)] max-w-3xl  mx-auto space-y-6 bg-background p-8 rounded-2xl shadow-lg border">
             <h2 className="text-2xl font-semibold text-center">Bank Details</h2>
 
             {/* Bank Name & Cancelled Cheque */}
@@ -58,7 +69,7 @@ export default function BankDetails() {
                   {form.formState.errors.accountno?.message}
                 </FieldError>
               </Field>
-              <Field>
+              <Field className="-mt-2 md:mt-0">
                 <FieldLabel htmlFor="bankname">Bank Name</FieldLabel>
                 <Input
                   id="bankname"
@@ -73,7 +84,7 @@ export default function BankDetails() {
             </div>
 
             {/* Branch & IFSC Code */}
-            <div className="grid md:grid-cols-2 gap-6 -mt-6">
+            <div className="grid md:grid-cols-2 gap-6 -mt-8">
               <Field>
                 <FieldLabel htmlFor="branch" className="">
                   Branch
@@ -87,7 +98,7 @@ export default function BankDetails() {
                 <FieldError>{form.formState.errors.branch?.message}</FieldError>
               </Field>
 
-              <Field>
+              <Field className="-mt-2 md:mt-0">
                 <FieldLabel htmlFor="ifsccode" className="">
                   IFSC Code
                 </FieldLabel>
@@ -104,23 +115,36 @@ export default function BankDetails() {
             </div>
 
             {/* Account Type & MICR Code */}
-            <div className="grid md:grid-cols-2 gap-6 -mt-6">
+            <div className="grid md:grid-cols-2 gap-6 -mt-8">
               <Field>
                 <FieldLabel htmlFor="accounttype" className="">
                   Type of Account
                 </FieldLabel>
-                <Input
-                  id="accounttype"
-                  placeholder="Savings / Current"
-                  {...form.register("accounttype")}
-                  className="-mt-2"
-                />
+                <Select
+                  value={form.watch("accounttype")}
+                  onValueChange={(value: "Saving" | "Current") =>
+                    form.setValue("accounttype", value)
+                  }
+                >
+                  <SelectTrigger className="-mt-2 w-full">
+                    <SelectValue placeholder="Select Account Type" />
+                  </SelectTrigger>
+
+                  <SelectContent>
+                    {Account_Type.map((item) => (
+                      <SelectItem key={item} value={item}>
+                        {item}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+
                 <FieldError>
                   {form.formState.errors.accounttype?.message}
                 </FieldError>
               </Field>
 
-              <Field>
+              <Field className="-mt-2 md:mt-0">
                 <FieldLabel htmlFor="digit" className="">
                   9 Digit MICR Code
                 </FieldLabel>
@@ -134,7 +158,7 @@ export default function BankDetails() {
               </Field>
             </div>
             <Field>
-              <FieldLabel htmlFor="cancelcheque" className="-mt-6">
+              <FieldLabel htmlFor="cancelcheque" className="-mt-8">
                 Cancelled Cheque
               </FieldLabel>
               <Input

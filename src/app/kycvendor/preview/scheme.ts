@@ -4,6 +4,10 @@ import { constitutionEnum, designationEnum, statusEnum, yesNoEnum } from "./cons
 export const formSchema = z.object({
   name: z.string().min(1),
   address: z.string().min(1),
+   pin: z.string().min(1),
+    city: z.string().min(1),
+    state: z.string().min(1),
+    district: z.string().min(1),
   dobdoi: z.coerce.date(),
   status: statusEnum,
   constitution: constitutionEnum,

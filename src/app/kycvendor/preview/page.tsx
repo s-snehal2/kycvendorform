@@ -35,6 +35,18 @@ export default function Preview({ data = PersonalData }: PreviewProps) {
               Address: <span className="font-semibold">{data.address}</span>
             </p>
             <p className="-mt-2">
+              Pincode: <span className="font-semibold">{data.pincode}</span>
+            </p>
+            <p className="-mt-2">
+              District: <span className="font-semibold">{data.district}</span>
+            </p>
+            <p className="-mt-2">
+              State: <span className="font-semibold">{data.state}</span>
+            </p>
+            <p className="-mt-2">
+              City: <span className="font-semibold">{data.city}</span>
+            </p>
+            <p className="-mt-2">
               DOB / DOI:{" "}
               <span className="font-semibold">
                 {data.dobdoi.toDateString()}
@@ -82,32 +94,38 @@ export default function Preview({ data = PersonalData }: PreviewProps) {
                 data.itr.map((item) => (
                   <div
                     key={item.year}
-                    className="rounded-lg border bg-muted/20 p-4 flex flex-col gap-3"
+                    className="rounded-lg border bg-muted/20 p-4 space-y-3"
                   >
                     {/* Header */}
-                    <div className="flex items-center justify-between">
-                      <span className="text-sm font-medium">
-                        Financial Year
-                      </span>
-                      <span className="px-3 py-1 text-xs font-semibold rounded-full bg-primary/10 text-primary">
-                        {item.year}
-                      </span>
-                    </div>
-
-                    {/* Content */}
-                    <div className="grid md:grid-cols-2 gap-4 text-sm">
-                      <div>
-                        <p className="text-muted-foreground">
-                          ITR Acknowledgement No
-                        </p>
-                        <p className="font-medium ">{item.ackNo}</p>
+                    <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+                      <div className="flex items-center justify-between gap-3">
+                        <span className="text-sm font-medium">
+                          Financial Year
+                        </span>
+                        <span className="px-3 py-1 text-xs font-semibold rounded-full bg-primary/10 text-primary">
+                          {item.year}
+                        </span>
                       </div>
 
-                      <div>
-                        <p className="text-muted-foreground">Date of Filing</p>
-                        <p className="font-medium ">
-                          {new Date(item.date).toLocaleDateString("en-IN")}
-                        </p>
+                      {/* Content */}
+                      <div className="flex gap-4 text-sm">
+                        <div>
+                          <p className="text-muted-foreground">
+                            ITR Acknowledgement No
+                          </p>
+                          <p className="font-medium break-all">
+                            {item.ackNo || "-"}
+                          </p>
+                        </div>
+
+                        <div>
+                          <p className="text-muted-foreground">
+                            Date of Filing
+                          </p>
+                          <p className="font-medium ">
+                            {new Date(item.date).toLocaleDateString("en-IN")}
+                          </p>
+                        </div>
                       </div>
                     </div>
                   </div>

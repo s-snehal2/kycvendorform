@@ -1,53 +1,42 @@
 "use client";
 
-import { useForm, useFieldArray } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import { Plus, PlusIcon, Trash2 } from "lucide-react";
+import { PlusIcon, Trash } from "lucide-react";
 import { z } from "zod/v3";
+import { useState } from "react";
 
 import { Field, FieldLabel, FieldError } from "@/components/ui/field";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Form } from "@/components/ui/form";
+import { Card } from "@/components/ui/card";
 
 import { formSchema, GovtCompliancesForm } from "./schema";
-import { yesNoEnum, ITR_YEARS } from "./constant";
-import { Card } from "@/components/ui/card";
-import { useState } from "react";
+import { yesNoEnum, plannedITRYears } from "./constant";
 
 export default function Govt() {
   const router = useRouter();
-  const [panFileName, setPanFileName] = useState("");
+
+  const [panFileName, setPanFileName] = useState<string | null>(null);
+  const [tanFileName, setTanFileName] = useState<string | null>(null);
+  const [gstFileName, setGstFileName] = useState<string | null>(null);
+  const [msmeFileName, setMsmeFileName] = useState<string | null>(null);
 
   const form = useForm<GovtCompliancesForm>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      itr: [],
       panLinkedWithAadhaar: "Yes",
+      itr: plannedITRYears.map((y) => ({
+        year: y.year.replace("–", "-") as "2024-25" | "2023-24",
+        ackNo: "",
+        date: undefined,
+      })),
     },
   });
-
-  const { fields, append, remove } = useFieldArray({
-    control: form.control,
-    name: "itr",
-  });
-
-  /* ------------------ ITR YEAR CONTROL ------------------ */
-  const addedYears = fields.map((f) => f.year);
-  const remainingYears = ITR_YEARS.filter((year) => !addedYears.includes(year));
-
-  const handleAddYear = () => {
-    if (remainingYears.length > 0) {
-      append({
-        year: remainingYears[0],
-        ackNo: "",
-        date: new Date(),
-      });
-    }
-  };
 
   /* ------------------ FILE HANDLER ------------------ */
   const handleFileChange = (
@@ -55,6 +44,40 @@ export default function Govt() {
     files: FileList | null
   ) => {
     form.setValue(fieldName, files ? files : "");
+  };
+
+  /* ------------------ PAN ------------------ */
+  const handlePanFileDelete = () => {
+    setPanFileName(null);
+    const input = document.getElementById("pan-file-input") as HTMLInputElement;
+    if (input) input.value = "";
+    handleFileChange("panFile", null);
+  };
+
+  /* ------------------ TAN ------------------ */
+  const handleTanFileDelete = () => {
+    setTanFileName(null);
+    const input = document.getElementById("tan-file-input") as HTMLInputElement;
+    if (input) input.value = "";
+    handleFileChange("tanFile", null);
+  };
+
+  /* ------------------ GST ------------------ */
+  const handleGstFileDelete = () => {
+    setGstFileName(null);
+    const input = document.getElementById("gst-file-input") as HTMLInputElement;
+    if (input) input.value = "";
+    handleFileChange("gstFile", null);
+  };
+
+  /* ------------------ MSME ------------------ */
+  const handleMsmeFileDelete = () => {
+    setMsmeFileName(null);
+    const input = document.getElementById(
+      "msme-file-input"
+    ) as HTMLInputElement;
+    if (input) input.value = "";
+    handleFileChange("msmeFile", null);
   };
 
   function onSubmit(values: GovtCompliancesForm) {
@@ -71,76 +94,116 @@ export default function Govt() {
             <h2 className="text-2xl font-semibold text-center">
               Govt Compliances
             </h2>
-
             {/* ------------------ PAN / TAN ------------------ */}
-            <div className="grid md:grid-cols-2 gap-6 -mt-4">
-              <div className="grid grid-cols-12 gap-2 items-end">
-                <div className="col-span-9">
-                  <Field>
-                    <FieldLabel>PAN No</FieldLabel>
-                    <Input type="text" placeholder="Enter PAN Number" />
-                  </Field>
-                </div>
-
-                <div className="col-span-3">
-                  <Field>
-                    <FieldLabel className="text-center"></FieldLabel>
-
-                    <div className="flex justify-center">
-                      <PlusIcon
-                        className="h-5 w-5 text-muted-foreground cursor-pointer"
-                        onClick={() =>
-                          (
-                            document.getElementById(
-                              "pan-file-input"
-                            ) as HTMLInputElement
-                          )?.click()
-                        }
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {/* PAN */}
+              <div>
+                <div className="grid grid-cols-12 gap-2 items-end md:mt-1">
+                  <div className="col-span-10">
+                    <Field>
+                      <FieldLabel>PAN No</FieldLabel>
+                      <Input
+                        type="text"
+                        className="-mt-2"
+                        {...form.register("pan")}
                       />
-                    </div>
-
+                    </Field>
+                  </div>
+                  <div className="col-span-2">
+                    {!panFileName && (
+                      <div className="flex justify-center border rounded-lg">
+                        <PlusIcon
+                          className="h-8.5 cursor-pointer"
+                          onClick={() =>
+                            (
+                              document.getElementById(
+                                "pan-file-input"
+                              ) as HTMLInputElement
+                            )?.click()
+                          }
+                        />
+                      </div>
+                    )}
                     <Input
                       id="pan-file-input"
                       type="file"
                       className="hidden"
+                      {...form.register("panFile")}
                       onChange={(e) => {
                         const file = e.target.files?.[0];
                         if (file) {
                           setPanFileName(file.name);
-                          handleFileChange("pan", e.target.files);
+                          handleFileChange("panFile", e.target.files);
                         }
                       }}
                     />
-
-                    {panFileName && (
-                      <p className="text-xs text-muted-foreground mt-1 text-center">
-                        ✔ {panFileName} attached
-                      </p>
-                    )}
-                  </Field>
+                  </div>
                 </div>
+                {panFileName && (
+                  <div className="flex justify-between mt-1">
+                    <p className="text-sm text-green-600">{panFileName}</p>
+                    <button type="button" onClick={handlePanFileDelete}>
+                      <Trash className="h-4 w-4 text-destructive" />
+                    </button>
+                  </div>
+                )}
               </div>
 
-              {panFileName && (
-                <p className="text-sm text-green-600 mt-1">
-                  File attached: {panFileName}
-                </p>
-              )}
-
-              {/*TAN Document*/}
-
-              <Field>
-                <FieldLabel className="">TAN Document</FieldLabel>
-                <Input
-                  type="file"
-                  onChange={(e) => handleFileChange("tan", e.target.files)}
-                  className="-mt-2"
-                />
-              </Field>
+              {/* TAN */}
+              <div>
+                <div className="grid grid-cols-12 gap-2 items-end -mt-2 md:mt-1">
+                  <div className="col-span-10">
+                    <Field>
+                      <FieldLabel>TAN No</FieldLabel>
+                      <Input
+                        type="text"
+                        className="-mt-2"
+                        {...form.register("tan")}
+                      />
+                    </Field>
+                  </div>
+                  <div className="col-span-2">
+                    {!tanFileName && (
+                      <div className="flex justify-center border rounded-lg">
+                        <PlusIcon
+                          className="h-8.5 cursor-pointer"
+                          onClick={() =>
+                            (
+                              document.getElementById(
+                                "tan-file-input"
+                              ) as HTMLInputElement
+                            )?.click()
+                          }
+                        />
+                      </div>
+                    )}
+                    <Input
+                      id="tan-file-input"
+                      type="file"
+                      className="hidden"
+                      {...form.register("tanFile")}
+                      onChange={(e) => {
+                        const file = e.target.files?.[0];
+                        if (file) {
+                          setTanFileName(file.name);
+                          handleFileChange("tanFile", e.target.files);
+                        }
+                      }}
+                    />
+                  </div>
+                </div>
+                {tanFileName && (
+                  <div className="flex justify-between mt-1">
+                    <p className="text-sm text-green-600">{tanFileName}</p>
+                    <button type="button" onClick={handleTanFileDelete}>
+                      <Trash className="h-4 w-4 text-destructive" />
+                    </button>
+                  </div>
+                )}
+              </div>
             </div>
-
             {/* ------------------ PAN LINK ------------------ */}
-            <Field className="-mt-6">
+            <Field className="-mt-8">
               <FieldLabel className="">PAN linked with Aadhaar</FieldLabel>
               <RadioGroup
                 value={form.watch("panLinkedWithAadhaar")}
@@ -154,91 +217,145 @@ export default function Govt() {
               >
                 {["Yes", "No"].map((v) => (
                   <label key={v} className="flex items-center gap-2">
-                    <RadioGroupItem value={v} />
-                    <span>{v}</span>
+                    <RadioGroupItem value={v} /> <span>{v}</span>
                   </label>
                 ))}
               </RadioGroup>
             </Field>
+            {/* ------------------ GST / MSME ------------------ */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 -mt-8">
+              {/* GST */}
+              <div>
+                <div className="grid grid-cols-12 gap-2 items-end">
+                  <div className="col-span-10">
+                    <Field>
+                      <FieldLabel>GST Registration No</FieldLabel>
+                      <Input
+                        type="text"
+                        className="-mt-2"
+                        {...form.register("gstregno")}
+                      />
+                    </Field>
+                  </div>
+                  <div className="col-span-2">
+                    {!gstFileName && (
+                      <div className="flex justify-center border rounded-lg">
+                        <PlusIcon
+                          className="h-8.5 cursor-pointer"
+                          onClick={() =>
+                            (
+                              document.getElementById(
+                                "gst-file-input"
+                              ) as HTMLInputElement
+                            )?.click()
+                          }
+                        />
+                      </div>
+                    )}
+                    <Input
+                      id="gst-file-input"
+                      type="file"
+                      className="hidden"
+                      {...form.register("gstFile")}
+                      onChange={(e) => {
+                        const file = e.target.files?.[0];
+                        if (file) {
+                          setGstFileName(file.name);
+                          handleFileChange("gstFile", e.target.files);
+                        }
+                      }}
+                    />
+                  </div>
+                </div>
+                {gstFileName && (
+                  <div className="flex justify-between mt-1">
+                    <p className="text-sm text-green-600">{gstFileName}</p>
+                    <button type="button" onClick={handleGstFileDelete}>
+                      <Trash className="h-4 w-4 text-destructive" />
+                    </button>
+                  </div>
+                )}
+              </div>
 
-            {/* ------------------ GST ------------------ */}
-            <div className="grid md:grid-cols-2 gap-6 -mt-6">
-              <Field>
-                <FieldLabel className="">GST Registration No</FieldLabel>
-                <Input {...form.register("gstregno")} className="-mt-2" />
-              </Field>
-
-              <Field>
-                <FieldLabel className="">GST Certificate</FieldLabel>
-                <Input
-                  type="file"
-                  onChange={(e) =>
-                    handleFileChange("gstcertificate", e.target.files)
-                  }
-                  className="-mt-2"
-                />
-              </Field>
-            </div>
-
-            {/* ------------------ MSME ------------------ */}
-            <div className="grid md:grid-cols-2 gap-6 -mt-6">
-              <Field>
-                <FieldLabel className="">MSME Registration No</FieldLabel>
-                <Input {...form.register("msmeregno")} className="-mt-2" />
-              </Field>
-
-              <Field>
-                <FieldLabel className="">MSME Certificate</FieldLabel>
-                <Input
-                  type="file"
-                  onChange={(e) =>
-                    handleFileChange("msmecertificate", e.target.files)
-                  }
-                  className="-mt-2"
-                />
-              </Field>
+              {/* MSME */}
+              <div>
+                <div className="grid grid-cols-12 gap-2 items-end -mt-2 md:mt-0">
+                  <div className="col-span-10">
+                    <Field>
+                      <FieldLabel>MSME Registration No</FieldLabel>
+                      <Input
+                        type="text"
+                        className="-mt-2"
+                        {...form.register("msmeregno")}
+                      />
+                    </Field>
+                  </div>
+                  <div className="col-span-2">
+                    {!msmeFileName && (
+                      <div className="flex justify-center border rounded-lg">
+                        <PlusIcon
+                          className="h-8.5 cursor-pointer"
+                          onClick={() =>
+                            (
+                              document.getElementById(
+                                "msme-file-input"
+                              ) as HTMLInputElement
+                            )?.click()
+                          }
+                        />
+                      </div>
+                    )}
+                    <Input
+                      id="msme-file-input"
+                      type="file"
+                      className="hidden"
+                      {...form.register("msmeFile")}
+                      onChange={(e) => {
+                        const file = e.target.files?.[0];
+                        if (file) {
+                          setMsmeFileName(file.name);
+                          handleFileChange("msmeFile", e.target.files);
+                        }
+                      }}
+                    />
+                  </div>
+                </div>
+                {msmeFileName && (
+                  <div className="flex justify-between mt-1">
+                    <p className="text-sm text-green-600">{msmeFileName}</p>
+                    <button type="button" onClick={handleMsmeFileDelete}>
+                      <Trash className="h-4 w-4 text-destructive" />
+                    </button>
+                  </div>
+                )}
+              </div>
             </div>
 
             {/* ------------------ ITR SECTION ------------------ */}
             <div className="space-y-2">
-              <div className="flex justify-between items-center">
-                <h4 className="text-md font-semibold flex flex-col">
+              <div className="flex justify-between items-center -mt-7 md:-mt-8">
+                <h4 className="text-md font-semibold flex flex-row gap-2 md:gap-1">
                   ITR Filed
                   <span>(FY 2024–25 & 2023–24)</span>
                 </h4>
-
-                {remainingYears.length > 0 && (
-                  <Button
-                    type="button"
-                    size="sm"
-                    variant="outline"
-                    onClick={handleAddYear}
-                    className="flex items-center gap-2"
-                  >
-                    <Plus size={16} />
-                  </Button>
-                )}
               </div>
 
-              {fields.map((field, index) => (
+              {plannedITRYears.map((item, index) => (
                 <div
-                  key={field.id}
+                  key={item.year}
                   className="border rounded-lg p-4 space-y-4 bg-muted/20"
                 >
+                  <input
+                    type="hidden"
+                    {...form.register(`itr.${index}.year`)}
+                    value={item.year.replace("–", "-")}
+                  />
+
                   <div className="flex justify-between items-center">
                     <h5 className="font-medium">
-                      Financial Year:{" "}
-                      <span className="text-primary">{field.year}</span>
+                      Financial Year:
+                      <span className="text-primary">{item.year}</span>
                     </h5>
-
-                    <Button
-                      type="button"
-                      size="icon"
-                      variant="ghost"
-                      onClick={() => remove(index)}
-                    >
-                      <Trash2 size={16} className="text-destructive" />
-                    </Button>
                   </div>
 
                   <div className="grid md:grid-cols-2 gap-4 -mt-2">
@@ -262,14 +379,13 @@ export default function Govt() {
               ))}
             </div>
             {/* IMPORTANT NOTE */}
-            <p className="text-sm text-red-600 font-semibold border-l-4 border-red-500 pl-3 py-2 bg-red-50 rounded">
+            <p className="text-sm text-destructive/95 font-semibold border-l-4 border-destructive/65 pl-3 py-1 bg-destructive/30 rounded -mt-4">
               If Income Tax Return as per Section 139(1) for the financial year
               2020-21 is not filed then, I undertake you to provide the ITR
               acknowledgement after filing the ITR and if the same is not
               provided then you can deduct the TDS as per section 206AB/206CCA,
               and we undertake to reimburse applicable Interest/Penalty on same.
             </p>
-
             {/* ------------------ ACTIONS ------------------ */}
             <div className="flex justify-center gap-6 pt-6 -mt-4">
               <Button

@@ -6,24 +6,25 @@ import { yesNoEnum } from "./constant";
 export const itrYearEnum = z.enum(["2024-25", "2023-24"]);
 
 export const formSchema = z.object({
-  itr: z
-    .array(
-      z.object({
-        year: itrYearEnum,
-        ackNo: z.string().min(1, "ITR Acknowledge No is required"),
-        date: z.coerce.date(),
-      })
-    )
-    .max(2),
+itr: z.array(
+  z.object({
+    year: itrYearEnum,   
+    ackNo: z.string().min(1, "ITR Acknowledge No is required"),
+    date: z.coerce.date(),
+  })
+),
 
-  pan: z.any().refine((f) => f && f.length > 0, "PAN file is required"),
-  tan: z.any().refine((f) => f && f.length > 0, "TAN file is required"),
+
+  pan:z.string().min(1) ,
+  panFile:z.any(),
+  tan: z.string().min(1),
+  tanFile: z.any(),
 
   gstregno: z.string().min(1),
-  gstcertificate: z.any().refine((f) => f && f.length > 0),
+  gstFile:z.any(),
 
   msmeregno: z.string().min(1),
-  msmecertificate: z.any().refine((f) => f && f.length > 0),
+  msmeFile: z.any(),
 
   panLinkedWithAadhaar: yesNoEnum,
 });

@@ -1,6 +1,10 @@
 export const PersonalData = {
   name: "Snehal Singh",
-  address: "123 Main Street, City, Country",
+  address: "123 Main Street",
+  city:"Mumbai",
+  state:"Maharashtra",
+  district:"thane",
+  pincode:401307,
   dobdoi: new Date("1990-01-01"),
   status: "Resident Individual" as const,
   constitution: "Sole Proprietorship" as const,

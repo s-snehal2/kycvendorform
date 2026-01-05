@@ -29,6 +29,7 @@ import {
   statusEnum,
 } from "./constant";
 import { Card } from "@/components/ui/card";
+import { useEffect, useState } from "react";
 
 export default function PersonalDetails() {
   const router = useRouter();
@@ -39,6 +40,32 @@ export default function PersonalDetails() {
       dobdoi: new Date(),
     },
   });
+
+  const [loadingPin, setLoadingPin] = useState(false);
+
+  useEffect(() => {
+    const pin = form.watch("pin");
+
+    if (pin?.length === 6) {
+      setLoadingPin(true);
+
+      fetch(`https://api.postalpincode.in/pincode/${pin}`)
+        .then((res) => res.json())
+        .then((data) => {
+          const postOffice = data[0]?.PostOffice?.[0];
+          if (postOffice) {
+            form.setValue("state", postOffice.State);
+            form.setValue("district", postOffice.District);
+            form.setValue("city", postOffice.Block || postOffice.Name);
+          } else {
+            form.setValue("state", "");
+            form.setValue("district", "");
+            form.setValue("city", "");
+          }
+        })
+        .finally(() => setLoadingPin(false));
+    }
+  }, [form.watch("pin")]);
 
   function onSubmit(values: z.infer<typeof formSchema>) {
     try {
@@ -73,19 +100,48 @@ export default function PersonalDetails() {
               </Field>
 
               <Field>
-                <FieldLabel className="">Address</FieldLabel>
+                <FieldLabel>Address</FieldLabel>
                 <Input {...form.register("address")} className="-mt-2" />
                 <FieldError>
                   {form.formState.errors.address?.message}
                 </FieldError>
               </Field>
-            </div>
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <Field>
+                  <FieldLabel>Pincode</FieldLabel>
+                  <Input {...form.register("pin")} className="-mt-2" />
 
+                  <FieldError>{form.formState.errors.pin?.message}</FieldError>
+                </Field>
+
+                <Field>
+                  <FieldLabel>City</FieldLabel>
+                  <Input {...form.register("city")} className="-mt-2" />
+                  <FieldError>{form.formState.errors.city?.message}</FieldError>
+                </Field>
+
+                <Field>
+                  <FieldLabel>District</FieldLabel>
+                  <Input {...form.register("district")} className="-mt-2" />
+                  <FieldError>
+                    {form.formState.errors.district?.message}
+                  </FieldError>
+                </Field>
+
+                <Field>
+                  <FieldLabel>State</FieldLabel>
+                  <Input {...form.register("state")} className="-mt-2" />
+                  <FieldError>
+                    {form.formState.errors.state?.message}
+                  </FieldError>
+                </Field>
+              </div>
+            </div>
             {/* CONTACT + DATE */}
             <div className="grid md:grid-cols-3 gap-5 -mt-6">
               <Field>
                 <FieldLabel className="">
-                  Date of Birth / Date of Incorporation
+                  Date of Birth / Incorporation
                 </FieldLabel>
                 <Input
                   type="date"
@@ -96,7 +152,7 @@ export default function PersonalDetails() {
               </Field>
 
               <Field>
-                <FieldLabel className="  md:mt-4.5">Mobile Number</FieldLabel>
+                <FieldLabel className=" ">Mobile Number</FieldLabel>
                 <Input
                   type="number"
                   {...form.register("mobileno")}
@@ -108,7 +164,7 @@ export default function PersonalDetails() {
               </Field>
 
               <Field>
-                <FieldLabel className=" md:mt-4.5">Email</FieldLabel>
+                <FieldLabel className="">Email</FieldLabel>
                 <Input {...form.register("email")} className="-mt-2" />
                 <FieldError>{form.formState.errors.email?.message}</FieldError>
               </Field>
@@ -167,42 +223,77 @@ export default function PersonalDetails() {
               </FieldError>
             </Field>
 
-            {/* PROPRIETOR + DESIGNATION */}
+            {/* Contact person + DESIGNATION */}
             <div className="grid md:grid-cols-1 gap-5 -mt-6">
-              <Field>
-                <FieldLabel className="-mt-1">
-                  Name of Contact Person
-                </FieldLabel>
-                <Input {...form.register("proprietorname")} className="-mt-2" />
-                <FieldError>
-                  {form.formState.errors.proprietorname?.message}
-                </FieldError>
-              </Field>
+              <div className="flex flex-col md:flex-row justify-between gap-4">
+                <Field>
+                  <FieldLabel className="-mt-1">
+                    Name of Contact Person
+                  </FieldLabel>
+                  <Input
+                    {...form.register("contactpersonname")}
+                    className="-mt-2"
+                  />
+                  <FieldError>
+                    {form.formState.errors.contactpersonname?.message}
+                  </FieldError>
+                </Field>
+
+                <Field>
+                  <FieldLabel className=" -mt-1">
+                    Contact Person Mobile No
+                  </FieldLabel>
+                  <Input
+                    type="number"
+                    {...form.register("contactpersonmobileno")}
+                    className="-mt-2"
+                  />
+                  <FieldError>
+                    {form.formState.errors.contactpersonmobileno?.message}
+                  </FieldError>
+                </Field>
+              </div>
 
               <Field>
-                <FieldLabel className="">Designation</FieldLabel>
-                <Select
-                  value={form.watch("designation")}
-                  onValueChange={(value) =>
-                    form.setValue(
-                      "designation",
-                      value as z.infer<typeof designationEnum>
-                    )
-                  }
-                >
-                  <SelectTrigger className="-mt-2">
-                    <SelectValue placeholder="Select designation" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {DESIGNATION_OPTIONS.map((item) => (
-                      <SelectItem key={item} value={item}>
-                        {item}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                <FieldLabel className="-mt-2">Designation</FieldLabel>
+
+                <div className="flex gap-3">
+                  {/* Select */}
+                  <Select
+                    value={form.watch("designation")}
+                    onValueChange={(value) =>
+                      form.setValue(
+                        "designation",
+                        value as z.infer<typeof designationEnum>
+                      )
+                    }
+                  >
+                    <SelectTrigger className="-mt-2 w-full">
+                      <SelectValue placeholder="Select designation" />
+                    </SelectTrigger>
+
+                    <SelectContent>
+                      {DESIGNATION_OPTIONS.map((item) => (
+                        <SelectItem key={item} value={item}>
+                          {item}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+
+                  {/* Input ONLY when Others selected */}
+                  {form.watch("designation") === "Other" && (
+                    <Input
+                      placeholder="Enter designation"
+                      className="-mt-2 w-full"
+                      {...form.register("designationother")}
+                    />
+                  )}
+                </div>
+
                 <FieldError>
-                  {form.formState.errors.designation?.message}
+                  {form.formState.errors.designation?.message ||
+                    form.formState.errors.designationother?.message}
                 </FieldError>
               </Field>
             </div>
