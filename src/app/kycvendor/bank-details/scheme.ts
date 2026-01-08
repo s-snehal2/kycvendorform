@@ -10,10 +10,13 @@ export const formSchema = z.object({
       "Cancelled Cheque is required"
     ),
   branch: z.string().min(1, "Branch is required"),
-  ifsccode: z.string().min(1, "IFSC Code is required"),
+ ifsccode: z
+  .string()
+  .length(11, "IFSC must be 11 characters"),
   accounttype: accounttypeEnum,
   digit: z.string().min(9, "MICR Code must be 9 digits").max(9),
-  accountno: z.string().min(1, "Account No is required"),
+  accountno: z.string().min(9, "Account number must be at least 9 digits")
+  .max(18, "Account number cannot exceed 18 digits").regex(/^\d+$/, "Account number must contain only digits"),
 });
 
 export type BankDetailsFormType = z.infer<typeof formSchema>;

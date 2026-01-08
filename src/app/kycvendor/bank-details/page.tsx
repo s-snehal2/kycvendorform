@@ -1,5 +1,5 @@
 "use client";
-
+import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -28,6 +28,33 @@ export default function BankDetails() {
       accounttype: "Saving",
     },
   });
+  const ifsc = form.watch("ifsccode");
+
+  useEffect(() => {
+    if (ifsc && ifsc.length === 11) {
+      fetchBankDetails(ifsc.toUpperCase());
+    }
+  }, [ifsc]);
+
+  const fetchBankDetails = async (ifsc: string) => {
+    if (ifsc.length !== 11) return;
+
+    try {
+      const res = await fetch(`https://ifsc.razorpay.com/${ifsc}`);
+      if (!res.ok) throw new Error("Invalid IFSC");
+
+      const data = await res.json();
+
+      form.setValue("bankname", data.BANK);
+      form.setValue("branch", data.BRANCH);
+      form.setValue("digit", data.MICR ?? "");
+    } catch (error) {
+      toast.error("Invalid IFSC code");
+      form.setValue("bankname", "");
+      form.setValue("branch", "");
+      form.setValue("digit", "");
+    }
+  };
 
   const handleFileChange = (files: FileList | null) => {
     form.setValue("cancelcheque", files ? Array.from(files) : []);
@@ -73,9 +100,10 @@ export default function BankDetails() {
                 <FieldLabel htmlFor="bankname">Bank Name</FieldLabel>
                 <Input
                   id="bankname"
+                  readOnly
                   placeholder="Enter Bank Name"
                   {...form.register("bankname")}
-                  className="-mt-2"
+                  className="-mt-2 bg-muted"
                 />
                 <FieldError>
                   {form.formState.errors.bankname?.message}
@@ -91,9 +119,10 @@ export default function BankDetails() {
                 </FieldLabel>
                 <Input
                   id="branch"
+                  readOnly
                   placeholder="Enter Branch Name"
                   {...form.register("branch")}
-                  className="-mt-2"
+                  className="-mt-2 bg-muted"
                 />
                 <FieldError>{form.formState.errors.branch?.message}</FieldError>
               </Field>
@@ -107,7 +136,14 @@ export default function BankDetails() {
                   placeholder="Enter IFSC Code"
                   {...form.register("ifsccode")}
                   className="-mt-2"
+                  onInput={(e) =>
+                    form.setValue(
+                      "ifsccode",
+                      (e.target as HTMLInputElement).value.toUpperCase()
+                    )
+                  }
                 />
+
                 <FieldError>
                   {form.formState.errors.ifsccode?.message}
                 </FieldError>
@@ -150,10 +186,11 @@ export default function BankDetails() {
                 </FieldLabel>
                 <Input
                   id="digit"
-                  placeholder="Enter 9 Digit MICR Code"
+                  readOnly
                   {...form.register("digit")}
-                  className="-mt-2"
+                  className="-mt-2 bg-muted"
                 />
+
                 <FieldError>{form.formState.errors.digit?.message}</FieldError>
               </Field>
             </div>

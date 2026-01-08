@@ -72,6 +72,7 @@ export default function PersonalDetails() {
         </pre>
       );
       router.push("/kycvendor/govt");
+      router.push(`/kycvendor/govt?constitution=${values.constitution}`);
     } catch (error) {
       console.error("Form submission error", error);
       toast.error("Failed to submit the form. Please try again.");
@@ -255,12 +256,12 @@ export default function PersonalDetails() {
                   {/* Select */}
                   <Select
                     value={form.watch("designation")}
-                    onValueChange={(value) =>
-                      form.setValue(
-                        "designation",
-                        value as z.infer<typeof designationEnum>
-                      )
-                    }
+                    onValueChange={(value) => {
+                      form.setValue("designation", value as any);
+                      if (value !== "Other") {
+                        form.setValue("designationother", ""); // clear other input
+                      }
+                    }}
                   >
                     <SelectTrigger className="-mt-2 w-full">
                       <SelectValue placeholder="Select designation" />
@@ -275,7 +276,7 @@ export default function PersonalDetails() {
                     </SelectContent>
                   </Select>
 
-                  {/* Input ONLY when Others selected */}
+                  {/* Show input ONLY when Other selected */}
                   {form.watch("designation") === "Other" && (
                     <Input
                       placeholder="Enter designation"

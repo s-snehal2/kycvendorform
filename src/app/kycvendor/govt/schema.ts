@@ -15,18 +15,29 @@ itr: z.array(
 ),
 
 
-  pan:z.string().min(1) ,
+ pan: z
+    .string()
+    .length(10, "PAN must be 10 characters")
+    .regex(/^[A-Z]{5}[0-9]{4}[A-Z]{1}$/, "Invalid PAN format"),
   panFile:z.any(),
-  tan: z.string().min(1),
-  tanFile: z.any(),
+  tan: z.string().optional(),
+  tanFile: z.any().optional(),
 
-  gstregno: z.string().min(1),
+  gstregno: z
+    .string()
+    .length(15, "GSTIN must be 15 characters")
+    .regex(
+      /^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}Z[0-9A-Z]{1}$/,
+      "Invalid GSTIN format"
+    )
+    .optional(),
   gstFile:z.any(),
 
-  msmeregno: z.string().min(1),
+  msmeregno: z.string().optional(),
   msmeFile: z.any(),
 
   panLinkedWithAadhaar: yesNoEnum,
+  msmeregister: yesNoEnum
 });
 
 export type GovtCompliancesForm = z.infer<typeof formSchema>;

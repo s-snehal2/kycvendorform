@@ -97,7 +97,7 @@ export default function Preview({ data = PersonalData }: PreviewProps) {
                     className="rounded-lg border bg-muted/20 p-2 space-y-3"
                   >
                     {/* Header */}
-                    <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+                    <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
                       <div className="flex items-center justify-between gap-3">
                         <span className="text-sm font-medium">
                           Financial Year
@@ -136,7 +136,7 @@ export default function Preview({ data = PersonalData }: PreviewProps) {
                 </p>
               )}
             </div>
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid md:grid-cols-2 gap-2 mt-4">
               <p>
                 PAN No:{" "}
                 <span className="font-semibold">
@@ -182,13 +182,11 @@ export default function Preview({ data = PersonalData }: PreviewProps) {
                   {data.msmecertificate.map((f: any) => f.name).join(", ")}
                 </span>
               </p>
-              <p>
-                PAN Linked with Aadhaar:{" "}
-                <span className="font-semibold">
-                  {data.panLinkedWithAadhaar}
-                </span>
-              </p>
             </div>
+            <p>
+              PAN Linked with Aadhaar:{" "}
+              <span className="font-semibold">{data.panLinkedWithAadhaar}</span>
+            </p>
           </CardContent>
         </Card>
 
