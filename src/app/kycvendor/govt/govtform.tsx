@@ -17,9 +17,12 @@ import { Card } from "@/components/ui/card";
 
 import { formSchema, GovtCompliancesForm } from "./schema";
 import { yesNoEnum, plannedITRYears } from "./constant";
+import { useVendorForm } from "../hook/vendorcontext";
 
-export default function Govt() {
+export default function GovtForm() {
   const router = useRouter();
+  const { vendor } = useVendorForm();
+  const { setGovtForm } = useVendorForm();
 
   const [panFileName, setPanFileName] = useState<string | null>(null);
   const [tanFileName, setTanFileName] = useState<string | null>(null);
@@ -40,8 +43,9 @@ export default function Govt() {
   });
   const msmeregister = form.watch("msmeregister");
 
-  const searchParams = useSearchParams();
-  const constitution = searchParams.get("constitution");
+  // const searchParams = useSearchParams();
+  // const constitution = searchParams.get("constitution");
+  const constitution = vendor?.constitution !== "Individual";
 
   /* ------------------ FILE HANDLER ------------------ */
   const handleFileChange = (
@@ -86,9 +90,9 @@ export default function Govt() {
   };
 
   function onSubmit(values: GovtCompliancesForm) {
-    console.log(values);
-    toast.success("Govt Compliances Saved");
-    router.push("/kycvendor/bank-details");
+    setGovtForm(values);
+    // toast.success("Govt Compliances Saved");
+    // router.push("/kycvendor/bank-details");
   }
 
   return (
@@ -255,7 +259,7 @@ export default function Govt() {
             {/* ------------------ GST / MSME ------------------ */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 -mt-8">
               {/* GST SECTION (ONLY when NOT Individual) */}
-              {constitution !== "Individual" && (
+              {constitution && (
                 <div
                   className={`${
                     msmeregister === "Yes" ? "md:col-span-1" : "md:col-span-2"
@@ -320,9 +324,7 @@ export default function Govt() {
               {msmeregister === "Yes" && (
                 <div
                   className={`${
-                    constitution === "Individual"
-                      ? "md:col-span-2"
-                      : "md:col-span-1"
+                    constitution ? "md:col-span-2" : "md:col-span-1"
                   }`}
                 >
                   <div className="grid grid-cols-12 gap-2 items-end">

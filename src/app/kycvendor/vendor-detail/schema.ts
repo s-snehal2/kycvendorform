@@ -1,5 +1,5 @@
 import z from "zod/v3";
-import { constitutionEnum, designationEnum, statusEnum } from "./constant";
+import { constitutionEnum, statusEnum } from "./constant";
 
 export const formSchema = z
   .object({
@@ -38,4 +38,4 @@ export const formSchema = z
     }
   );
 
-export type PersonalDetailForm = z.infer<typeof formSchema>;
+export type VendorDetailForm = z.infer<typeof formSchema>;

@@ -1,10 +1,12 @@
-import React from "react";
-import PersonalDetails from "./personaldetail/page";
+import { VendorFormProvider } from "./hook/vendorcontext";
+import PageWrapper from "./page-wrapper";
 
 function page() {
   return (
     <div>
-      <PersonalDetails />
+      <VendorFormProvider>
+        <PageWrapper />
+      </VendorFormProvider>
     </div>
   );
 }

@@ -1,6 +1,10 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import { VendorFormProvider } from "./kycvendor/hook/vendorcontext";
+import VendorDetails from "./kycvendor/vendor-detail/vendordetail";
+import BankDetails from "./kycvendor/bank-details/bankdetail";
+import GovtForm from "./kycvendor/govt/govtform";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",

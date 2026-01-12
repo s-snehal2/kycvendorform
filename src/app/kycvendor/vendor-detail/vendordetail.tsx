@@ -19,7 +19,7 @@ import { Form } from "@/components/ui/form";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 
 import z from "zod/v3";
-import { formSchema, PersonalDetailForm } from "./schema";
+import { formSchema, VendorDetailForm } from "./schema";
 import {
   CONSTITUTION_OPTIONS,
   constitutionEnum,
@@ -30,11 +30,13 @@ import {
 } from "./constant";
 import { Card } from "@/components/ui/card";
 import { useEffect } from "react";
+import { useVendorForm } from "../hook/vendorcontext";
 
-export default function PersonalDetails() {
+export default function VendorDetails() {
   const router = useRouter();
+  const { setVendor } = useVendorForm();
 
-  const form = useForm<PersonalDetailForm>({
+  const form = useForm<VendorDetailForm>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       dobdoi: new Date(),
@@ -65,14 +67,14 @@ export default function PersonalDetails() {
 
   function onSubmit(values: z.infer<typeof formSchema>) {
     try {
-      console.log(values);
+      setVendor(values);
       toast(
         <pre className="mt-1 w-full rounded-md bg-slate-950 p-4 text-xs">
           <code className="text-white">{JSON.stringify(values, null, 1)}</code>
         </pre>
       );
-      router.push("/kycvendor/govt");
-      router.push(`/kycvendor/govt?constitution=${values.constitution}`);
+      // router.push("/kycvendor/govt");
+      // router.push(`/kycvendor/govt?constitution=${values.constitution}`);
     } catch (error) {
       console.error("Form submission error", error);
       toast.error("Failed to submit the form. Please try again.");

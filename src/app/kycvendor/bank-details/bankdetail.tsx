@@ -18,10 +18,13 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Account_Type, accounttypeEnum } from "./constant";
+import { Account_Type } from "./constant";
+import { useVendorForm } from "../hook/vendorcontext";
 
 export default function BankDetails() {
+  const { setBankDetails } = useVendorForm();
   const router = useRouter();
+
   const form = useForm<BankDetailsFormType>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -62,13 +65,13 @@ export default function BankDetails() {
 
   const onSubmit = (values: z.infer<typeof formSchema>) => {
     try {
-      console.log(values);
+      setBankDetails(values);
       toast(
         <pre className="mt-2 w-full rounded-md  p-4 text-xs">
           <code className="text-white">{JSON.stringify(values, null, 2)}</code>
         </pre>
       );
-      router.push("/kycvendor/preview");
+      // router.push("/kycvendor/preview");
     } catch (error) {
       toast.error("Failed to submit the form. Please try again.");
     }
